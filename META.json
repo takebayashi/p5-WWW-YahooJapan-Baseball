@@ -1,5 +1,5 @@
 {
-   "abstract" : "It's new $module",
+   "abstract" : "Fetches Yahoo Japan's baseball stats",
    "author" : [
       "Shun Takebayashi <shun@takebayashi.asia>"
    ],
@@ -42,6 +42,7 @@
       },
       "runtime" : {
          "requires" : {
+            "Web::Scraper" : "0",
             "perl" : "5.008001"
          }
       },

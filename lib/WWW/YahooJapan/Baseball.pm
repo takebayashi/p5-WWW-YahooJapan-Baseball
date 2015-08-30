@@ -109,7 +109,7 @@ __END__
 
 =head1 NAME
 
-WWW::YahooJapan::Baseball - It's new $module
+WWW::YahooJapan::Baseball - Fetches Yahoo Japan's baseball stats
 
 =head1 SYNOPSIS
 
@@ -117,7 +117,7 @@ WWW::YahooJapan::Baseball - It's new $module
 
 =head1 DESCRIPTION
 
-WWW::YahooJapan::Baseball is ...
+WWW::YahooJapan::Baseball provides a way to fetch Japanese baseball stats via Yahoo Japan's baseball service.
 
 =head1 LICENSE
 

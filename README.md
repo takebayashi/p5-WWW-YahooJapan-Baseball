@@ -1,6 +1,6 @@
 # NAME
 
-WWW::YahooJapan::Baseball - It's new $module
+WWW::YahooJapan::Baseball - Fetches Yahoo Japan's baseball stats
 
 # SYNOPSIS
 
@@ -8,7 +8,7 @@ WWW::YahooJapan::Baseball - It's new $module
 
 # DESCRIPTION
 
-WWW::YahooJapan::Baseball is ...
+WWW::YahooJapan::Baseball provides a way to fetch Japanese baseball stats via Yahoo Japan's baseball service.
 
 # LICENSE
 
