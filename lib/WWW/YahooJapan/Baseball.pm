@@ -14,8 +14,9 @@ our $PREFIX = "http://baseball.yahoo.co.jp";
 
 sub get_game_uris {
   my $ymd = shift;
+  my $league = shift;
   my $day_scraper = scraper {
-    process '//*[@id="gm_sch"]//a[starts-with(@href, "/npb/game/' . $ymd . '") and not(contains(@href, "/top"))]', 'uris[]' => '@href';
+    process '//*[@id="gm_sch"]/div[contains(@class, "' . $league . '")]/following-sibling::div[position() <= 2 and contains(@class, "NpbScoreBg")]//a[starts-with(@href, "/npb/game/' . $ymd . '") and not(contains(@href, "/top"))]', 'uris[]' => '@href';
   };
   my $res = $day_scraper->scrape(URI->new($PREFIX . '/npb/schedule/?date=' . $ymd));
   return $res->{uris};
