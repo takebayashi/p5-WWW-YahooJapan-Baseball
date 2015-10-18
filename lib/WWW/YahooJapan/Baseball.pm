@@ -15,13 +15,13 @@ sub get_game_uris {
   my $ymd = shift;
   my $league = shift;
   my $uri = URI->new($PREFIX . '/npb/schedule/?date=' . $ymd);
-  WWW::YahooJapan::Baseball::Parser::parse_games_page($uri, $ymd, $league);
+  WWW::YahooJapan::Baseball::Parser::parse_games_page($ymd, $league, uri => $uri);
 }
 
 sub get_game_stats {
   my $uri = shift;
   $uri->path($uri->path . 'stats');
-  WWW::YahooJapan::Baseball::Parser::parse_game_stats_page($uri);
+  WWW::YahooJapan::Baseball::Parser::parse_game_stats_page(uri => $uri);
 }
 
 1;

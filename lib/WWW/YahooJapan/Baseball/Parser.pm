@@ -3,11 +3,13 @@ package WWW::YahooJapan::Baseball::Parser;
 use Web::Scraper;
 
 sub parse_games_page {
-  my ($html, $date, $league) = @_;
+  my $date = shift;
+  my $league = shift;
+  my %params = @_;
   my $day_scraper = scraper {
     process '//*[@id="gm_sch"]/div[contains(@class, "' . $league . '")]/following-sibling::div[position() <= 2 and contains(@class, "NpbScoreBg")]//a[starts-with(@href, "/npb/game/' . $date . '") and not(contains(@href, "/top"))]', 'uris[]' => '@href';
   };
-  my $res = $day_scraper->scrape($html);
+  my $res = $day_scraper->scrape(defined $params{html} ? ($params{html}, $params{uri}) : $params{uri});
   return $res->{uris};
 }
 
@@ -65,14 +67,14 @@ sub parse_game_player_row {
 }
 
 sub parse_game_stats_page {
-  my $html = shift;
+  my %params = @_;
   my $stats_scraper = scraper {
     process '//*[@id="st_batth" or @id="st_battv"]//tr', 'lines[]' => scraper {
       process '//td', 'cells[]' => 'TEXT';
       process_first '//a[contains(@href, "/npb/player")]', 'player_uri' => '@href';
     };
   };
-  my $res = $stats_scraper->scrape($html);
+  my $res = $stats_scraper->scrape(defined $params{html} ? ($params{html}, $params{uri}) : $params{uri});
   my @players = ();
   for my $line (@{$res->{lines}}) {
     my $cells = $line->{cells};
