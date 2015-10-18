@@ -36,6 +36,13 @@ WWW::YahooJapan::Baseball - Fetches Yahoo Japan's baseball stats
 =head1 SYNOPSIS
 
     use WWW::YahooJapan::Baseball;
+    use Data::Dumper;
+
+    my @uris = WWW::YahooJapan::Baseball::get_game_uris('20151001', 'NpbPl');
+    for my $uri (@uris) {
+      my @player_stats = WWW::YahooJapan::Baseball::get_game_player_stats($uri);
+      print Dumper \@player_stats;
+    }
 
 =head1 DESCRIPTION
 
