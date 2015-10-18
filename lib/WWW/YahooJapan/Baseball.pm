@@ -9,16 +9,27 @@ our $VERSION = "0.01";
 
 use URI;
 
-our $PREFIX = "http://baseball.yahoo.co.jp";
+sub new {
+  my ($class, %self) = @_;
+  for my $required (qw/date league/) {
+    unless (defined $self{$required}) {
+      return undef;
+    }
+  }
+  unless (defined $self{prefix}) {
+    $self{prefix} = 'http://baseball.yahoo.co.jp';
+  }
+  bless \%self, $class;
+}
 
-sub get_game_uris {
-  my $ymd = shift;
-  my $league = shift;
-  my $uri = URI->new($PREFIX . '/npb/schedule/?date=' . $ymd);
-  WWW::YahooJapan::Baseball::Parser::parse_games_page($ymd, $league, uri => $uri);
+sub game_uris {
+  my $self = shift;
+  my $uri = URI->new($self->{prefix} . '/npb/schedule/?date=' . $self->{date});
+  WWW::YahooJapan::Baseball::Parser::parse_games_page($self->{date}, $self->{league}, uri => $uri);
 }
 
 sub get_game_player_stats {
+  my $self = shift;
   my $uri = shift;
   $uri->path($uri->path . 'stats');
   WWW::YahooJapan::Baseball::Parser::parse_game_stats_page(uri => $uri);
