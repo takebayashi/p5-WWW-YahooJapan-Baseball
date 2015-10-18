@@ -7,10 +7,10 @@ WWW::YahooJapan::Baseball - Fetches Yahoo Japan's baseball stats
     use WWW::YahooJapan::Baseball;
     use Data::Dumper;
 
-    my @uris = WWW::YahooJapan::Baseball::get_game_uris('20151001', 'NpbPl');
-    for my $uri (@uris) {
-      my @player_stats = WWW::YahooJapan::Baseball::get_game_player_stats($uri);
-      print Dumper \@player_stats;
+    my $client = WWW::YahooJapan::Baseball->new(date => '20151001', league => 'NpbPl');
+    for my $game ($client->games) {
+      my @stats = $game->player_stats;
+      print Dumper \@stats;
     }
 
 # DESCRIPTION
