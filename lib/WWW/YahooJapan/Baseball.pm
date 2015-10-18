@@ -18,7 +18,7 @@ sub get_game_uris {
   WWW::YahooJapan::Baseball::Parser::parse_games_page($ymd, $league, uri => $uri);
 }
 
-sub get_game_stats {
+sub get_game_player_stats {
   my $uri = shift;
   $uri->path($uri->path . 'stats');
   WWW::YahooJapan::Baseball::Parser::parse_game_stats_page(uri => $uri);
