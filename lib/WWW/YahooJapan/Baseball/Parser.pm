@@ -1,5 +1,16 @@
 package WWW::YahooJapan::Baseball::Parser;
 
+use Web::Scraper;
+
+sub parse_games_page {
+  my ($html, $date, $league) = @_;
+  my $day_scraper = scraper {
+    process '//*[@id="gm_sch"]/div[contains(@class, "' . $league . '")]/following-sibling::div[position() <= 2 and contains(@class, "NpbScoreBg")]//a[starts-with(@href, "/npb/game/' . $date . '") and not(contains(@href, "/top"))]', 'uris[]' => '@href';
+  };
+  my $res = $day_scraper->scrape($html);
+  return $res->{uris};
+}
+
 sub parse_game_player_row {
   my $cells = shift;
   my $stats = {};
@@ -51,6 +62,32 @@ sub parse_game_player_row {
     $stats->{innings}->{$bi++} = $bat;
   }
   return $player_name, $stats;
+}
+
+sub parse_game_stats_page {
+  my $html = shift;
+  my $stats_scraper = scraper {
+    process '//*[@id="st_batth" or @id="st_battv"]//tr', 'lines[]' => scraper {
+      process '//td', 'cells[]' => 'TEXT';
+      process_first '//a[contains(@href, "/npb/player")]', 'player_uri' => '@href';
+    };
+  };
+  my $res = $stats_scraper->scrape($html);
+  my @players = ();
+  for my $line (@{$res->{lines}}) {
+    my $cells = $line->{cells};
+    unless ($cells and $line->{player_uri}) {
+      next;
+    }
+    my ($player_name, $player_stats) = WWW::YahooJapan::Baseball::Parser::parse_game_player_row($cells);
+    $player_stats->{player} = {
+      name => $player_name,
+      uri => $line->{player_uri},
+      $line->{player_uri}->query_form
+    };
+    push(@players, $player_stats);
+  }
+  return \@players;
 }
 
 1;

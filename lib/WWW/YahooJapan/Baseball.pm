@@ -8,46 +8,20 @@ use WWW::YahooJapan::Baseball::Parser;
 our $VERSION = "0.01";
 
 use URI;
-use Web::Scraper;
-use Data::Dumper;
 
 our $PREFIX = "http://baseball.yahoo.co.jp";
 
 sub get_game_uris {
   my $ymd = shift;
   my $league = shift;
-  my $day_scraper = scraper {
-    process '//*[@id="gm_sch"]/div[contains(@class, "' . $league . '")]/following-sibling::div[position() <= 2 and contains(@class, "NpbScoreBg")]//a[starts-with(@href, "/npb/game/' . $ymd . '") and not(contains(@href, "/top"))]', 'uris[]' => '@href';
-  };
-  my $res = $day_scraper->scrape(URI->new($PREFIX . '/npb/schedule/?date=' . $ymd));
-  return $res->{uris};
+  my $uri = URI->new($PREFIX . '/npb/schedule/?date=' . $ymd);
+  WWW::YahooJapan::Baseball::Parser::parse_games_page($uri, $ymd, $league);
 }
 
 sub get_game_stats {
   my $uri = shift;
   $uri->path($uri->path . 'stats');
-  my $stats_scraper = scraper {
-    process '//*[@id="st_batth" or @id="st_battv"]//tr', 'lines[]' => scraper {
-      process '//td', 'cells[]' => 'TEXT';
-      process_first '//a[contains(@href, "/npb/player")]', 'player_uri' => '@href';
-    };
-  };
-  my $res = $stats_scraper->scrape($uri);
-  my @players = ();
-  for my $line (@{$res->{lines}}) {
-    my $cells = $line->{cells};
-    unless ($cells and $line->{player_uri}) {
-      next;
-    }
-    my ($player_name, $player_stats) = WWW::YahooJapan::Baseball::Parser::parse_game_player_row($cells);
-    $player_stats->{player} = {
-      name => $player_name,
-      uri => $line->{player_uri},
-      $line->{player_uri}->query_form
-    };
-    push(@players, $player_stats);
-  }
-  return \@players;
+  WWW::YahooJapan::Baseball::Parser::parse_game_stats_page($uri);
 }
 
 1;
