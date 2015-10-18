@@ -10,7 +10,7 @@ sub parse_games_page {
     process '//*[@id="gm_sch"]/div[contains(@class, "' . $league . '")]/following-sibling::div[position() <= 2 and contains(@class, "NpbScoreBg")]//a[starts-with(@href, "/npb/game/' . $date . '") and not(contains(@href, "/top"))]', 'uris[]' => '@href';
   };
   my $res = $day_scraper->scrape(defined $params{html} ? ($params{html}, $params{uri}) : $params{uri});
-  return $res->{uris};
+  @{$res->{uris}};
 }
 
 sub parse_game_player_row {
@@ -89,7 +89,7 @@ sub parse_game_stats_page {
     };
     push(@players, $player_stats);
   }
-  return \@players;
+  @players;
 }
 
 1;
