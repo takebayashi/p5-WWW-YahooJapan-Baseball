@@ -61,7 +61,7 @@ sub parse_game_player_row {
   my $bi = 1;
   $stats->{innings} = {};
   for my $bat (@$cells) {
-    $stats->{innings}->{$bi++} = $bat;
+    $stats->{innings}->{$bi++} = $bat ne '' ? [$bat] : [];
   }
   return $player_name, $stats;
 }
