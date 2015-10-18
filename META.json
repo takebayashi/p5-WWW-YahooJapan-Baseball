@@ -53,6 +53,17 @@
       }
    },
    "release_status" : "unstable",
+   "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/takebayashi/p5-WWW-YahooJapan-Baseball/issues"
+      },
+      "homepage" : "https://github.com/takebayashi/p5-WWW-YahooJapan-Baseball",
+      "repository" : {
+         "type" : "git",
+         "url" : "git://github.com/takebayashi/p5-WWW-YahooJapan-Baseball.git",
+         "web" : "https://github.com/takebayashi/p5-WWW-YahooJapan-Baseball"
+      }
+   },
    "version" : "0.01",
    "x_authority" : "cpan:TAKEBAYAS"
 }
