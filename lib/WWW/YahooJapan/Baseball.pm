@@ -3,11 +3,12 @@ use 5.008001;
 use strict;
 use warnings;
 use utf8;
+
+use WWW::YahooJapan::Baseball::Game;
 use WWW::YahooJapan::Baseball::Parser;
+use URI;
 
 our $VERSION = "0.01";
-
-use URI;
 
 sub new {
   my ($class, %self) = @_;
@@ -22,17 +23,11 @@ sub new {
   bless \%self, $class;
 }
 
-sub game_uris {
+sub games {
   my $self = shift;
   my $uri = URI->new($self->{prefix} . '/npb/schedule/?date=' . $self->{date});
-  WWW::YahooJapan::Baseball::Parser::parse_games_page($self->{date}, $self->{league}, uri => $uri);
-}
-
-sub get_game_player_stats {
-  my $self = shift;
-  my $uri = shift;
-  $uri->path($uri->path . 'stats');
-  WWW::YahooJapan::Baseball::Parser::parse_game_stats_page(uri => $uri);
+  my @game_uris = WWW::YahooJapan::Baseball::Parser::parse_games_page($self->{date}, $self->{league}, uri => $uri);
+  map { WWW::YahooJapan::Baseball::Game->new(uri => $_) } @game_uris;
 }
 
 1;
