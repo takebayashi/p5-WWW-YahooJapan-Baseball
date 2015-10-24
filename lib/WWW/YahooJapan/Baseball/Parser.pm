@@ -1,5 +1,7 @@
 package WWW::YahooJapan::Baseball::Parser;
 
+use utf8;
+
 use Web::Scraper;
 
 sub parse_games_page {
@@ -7,10 +9,21 @@ sub parse_games_page {
   my $league = shift;
   my %params = @_;
   my $day_scraper = scraper {
+    process_first '//*[@id="gm_sch"]/div[contains(@class, "' . $league . '")]', 'league_name' => 'TEXT';
     process '//*[@id="gm_sch"]/div[contains(@class, "' . $league . '")]/following-sibling::div[position() <= 2 and contains(@class, "NpbScoreBg")]//a[starts-with(@href, "/npb/game/' . $date . '") and not(contains(@href, "/top"))]', 'uris[]' => '@href';
   };
   my $res = $day_scraper->scrape(defined $params{html} ? ($params{html}, $params{uri}) : $params{uri});
-  @{$res->{uris}};
+  my %league_names = (
+    NpbPl => 'パ･リーグ',
+    NpbCl => 'セ･リーグ',
+    NpbIl => '交流戦'
+  );
+  if ($res->{league_name} eq $league_names{$league}) {
+    return @{$res->{uris}};
+  }
+  else {
+    return ();
+  }
 }
 
 sub parse_game_player_row {
