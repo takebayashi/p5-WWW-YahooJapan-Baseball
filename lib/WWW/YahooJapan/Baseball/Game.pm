@@ -10,6 +10,7 @@ sub new {
       return undef;
     }
   }
+  ($self{id}) = $self{uri} =~ m/(20[0-9]{8})/;
   bless \%self, $class;
 }
 

@@ -67,14 +67,20 @@ sub parse_game_player_row {
 
   my $player_name = shift @$cells;
 
-  my @indexes = qw(avg ab r h rbi k bbhbp shsf sb e hr);
-  for my $i (@indexes) {
-    $stats->{$i} = shift @$cells;
+  $stats->{statuses} = {};
+  for my $status (qw(ba)) {
+    $stats->{statuses}->{$status} = shift @$cells;
   }
-  my $bi = 1;
-  $stats->{innings} = {};
+
+  $stats->{results} = {};
+  for my $result (qw(ab r h rbi k bb_hbp sh_sf sb e hr)) {
+    $stats->{results}->{$result} = 0 + shift @$cells;
+  }
+
+  my $abi = 1;
+  $stats->{at_bats_by_innings} = {};
   for my $bat (@$cells) {
-    $stats->{innings}->{$bi++} = $bat ne '' ? [$bat] : [];
+    $stats->{at_bats_by_innings}->{$abi++} = $bat ne '' ? [$bat] : [];
   }
   return $player_name, $stats;
 }
