@@ -8,7 +8,7 @@ use WWW::YahooJapan::Baseball::Game;
 use WWW::YahooJapan::Baseball::Parser;
 use URI;
 
-our $VERSION = "0.02";
+our $VERSION = "0.03";
 
 sub new {
   my ($class, %self) = @_;
