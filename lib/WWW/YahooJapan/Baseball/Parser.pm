@@ -26,7 +26,7 @@ sub parse_games_page {
   }
 }
 
-sub parse_game_player_row {
+sub parse_game_player_batting_row {
   my $cells = shift;
   my $stats = {};
 
@@ -85,30 +85,81 @@ sub parse_game_player_row {
   return $player_name, $stats;
 }
 
+sub parse_game_player_pitching_row {
+  my $cells = shift;
+  my $stats = {};
+
+  my $wls_rep = shift @$cells;
+  if ($wls_rep eq '○') {
+    $stats->{wls} = 'w';
+  }
+  elsif ($wls_rep eq '●') {
+    $stats->{wls} = 'l';
+  }
+  elsif ($wls_rep eq 'S') {
+    $stats->{wls} = 's';
+  }
+  else {
+    $stats->{wls} = '';
+  }
+
+  my $player_name = shift @$cells;
+
+  $stats->{statuses} = {};
+  for my $status (qw(era)) {
+    $stats->{statuses}->{$status} = shift @$cells;
+  }
+
+  $stats->{results} = {};
+  for my $result (qw(pi at pit h hr k bb_hbp r er)) {
+    $stats->{results}->{$result} = 0 + shift @$cells;
+  }
+
+  return $player_name, $stats;
+}
+
 sub parse_game_stats_page {
   my %params = @_;
   my $stats_scraper = scraper {
-    process '//*[@id="st_batth" or @id="st_battv"]//tr', 'lines[]' => scraper {
+    process '//*[@id="st_batth" or @id="st_battv"]//tr', 'batting_lines[]' => scraper {
+      process '//td', 'cells[]' => 'TEXT';
+      process_first '//a[contains(@href, "/npb/player")]', 'player_uri' => '@href';
+    };
+    process '//*[@id="st_pith" or @id="st_pitv"]//tr', 'pitching_lines[]' => scraper {
       process '//td', 'cells[]' => 'TEXT';
       process_first '//a[contains(@href, "/npb/player")]', 'player_uri' => '@href';
     };
   };
   my $res = $stats_scraper->scrape(defined $params{html} ? ($params{html}, $params{uri}) : $params{uri});
-  my @players = ();
-  for my $line (@{$res->{lines}}) {
+  my @fielders = ();
+  for my $line (@{$res->{batting_lines}}) {
     my $cells = $line->{cells};
     unless ($cells and $line->{player_uri}) {
       next;
     }
-    my ($player_name, $player_stats) = WWW::YahooJapan::Baseball::Parser::parse_game_player_row($cells);
+    my ($player_name, $player_stats) = WWW::YahooJapan::Baseball::Parser::parse_game_player_batting_row($cells);
     $player_stats->{player} = {
       name => $player_name,
       uri => $line->{player_uri},
       $line->{player_uri}->query_form
     };
-    push(@players, $player_stats);
+    push(@fielders, $player_stats);
   }
-  @players;
+  my @pitchers = ();
+  for my $line (@{$res->{pitching_lines}}) {
+    my $cells = $line->{cells};
+    unless ($cells and $line->{player_uri}) {
+      next;
+    }
+    my ($player_name, $player_stats) = WWW::YahooJapan::Baseball::Parser::parse_game_player_pitching_row($cells);
+    $player_stats->{player} = {
+      name => $player_name,
+      uri => $line->{player_uri},
+      $line->{player_uri}->query_form
+    };
+    push(@pitchers, $player_stats);
+  }
+  ('fielders' => \@fielders, 'pitchers' => \@pitchers);
 }
 
 1;
