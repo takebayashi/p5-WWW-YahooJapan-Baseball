@@ -2,6 +2,10 @@ Revision history for Perl extension WWW-YahooJapan-Baseball
 
 {{$NEXT}}
 
+0.04 2016-02-07T05:26:00Z
+
+    - Add pitching stats
+
 0.03 2015-11-02T08:30:36Z
 
     - Split game response to game stats and season stats.
