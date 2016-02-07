@@ -46,8 +46,8 @@ WWW::YahooJapan::Baseball - Fetches Yahoo Japan's baseball stats
 
     my $client = WWW::YahooJapan::Baseball->new(date => '20151001', league => 'NpbPl');
     for my $game ($client->games) {
-      my @stats = $game->player_stats;
-      print Dumper \@stats;
+      my %stats = $game->player_stats;
+      print Dumper \%stats;
     }
 
 =head1 DESCRIPTION
